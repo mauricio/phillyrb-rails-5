@@ -72,6 +72,78 @@
         </section>
 
         <section>
+            <h1>Why care about Ruby 2.3?</h1>
+        </section>
+
+        <section>
+            <h1>
+                Safe navigation with <em>&.</em>
+            </h1>
+            <pre>
+                <code data-trim class="ruby">
+2.3.0 :001 > post = nil
+=> nil
+2.3.0 :002 > post&.author&.email
+=> nil
+2.3.0 :003 > post.author.email
+NoMethodError: undefined method `author' for nil:NilClass
+                </code>
+            </pre>
+        </section>
+
+        <section>
+            <h1>Frozen strings!</h1>
+            <p>
+                Immutable strings are now part of the standard library, calling <em>"some string".freeze</em>
+                now allocates much less memory and you can force source files to only produce frozen strings.
+            </p>
+        </section>
+
+        <section>
+            <h1>Ok, back to <em>Rails</em></h1>
+        </section>
+
+        <section>
+            <h1>
+                Upgrading?
+            </h1>
+            <p>
+                Make sure your test suite is trustworthy and covers what your app is doing. Otherwise, well, good luck with that!
+            </p>
+        </section>
+
+        <section>
+            <h1>
+                Run the upgrade script
+            </h1>
+            <pre>
+                <code data-trim class="shell">
+rake rails:update
+                </code>
+            </pre>
+        </section>
+
+        <section>
+            <h1>
+                Callback chains for <em>ActiveRecord</em> or <em>ActiveModel</em> do not stop on a false value
+            </h1>
+            <pre>
+                <code data-trim class="ruby">
+throw(:abort)
+                </code>
+            </pre>
+        </section>
+
+        <section>
+            <h1>
+                Now you have to run your test suite and fix issues and deprecations one by one
+            </h1>
+            <p>
+                And include gems, as a lot of funcionality has been moved out, like <em>respond_with</em>.
+            </p>
+        </section>
+
+        <section>
             <h1>Using <em>rspec</em>?</h1>
             <p>You have to run on master, there is no released version for Rails 5</p>
         </section>
