@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+
+    <title>What's new in Rails 5?</title>
+
+    <meta name="description" content="A presentation about what's new in Rails 5">
+    <meta name="author" content="Maurício Linhares">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+    <link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="css/theme/black.css" id="theme">
+
+    <!-- Code syntax highlighting -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+
+    <!-- Printing and PDF exports -->
+    <script>
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = window.location.search.match(/print-pdf/gi) ? 'css/print/pdf.css' : 'css/print/paper.css';
+        document.getElementsByTagName('head')[0].appendChild(link);
+    </script>
+
+    <!--[if lt IE 9]>
+    <script src="lib/js/html5shiv.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+
+<div class="reveal">
+
+    <!-- Any section element inside of this container is displayed as a slide -->
+    <div class="slides">
+
+        <section>
+            <h1>Rails 5</h1>
+            <h3>What's new?</h3>
+            <p>
+                <small><a href="http://mauricio.github.io/">Maurício Linhares</a> / <a
+                        href="http://twitter.com/mauriciojr">@mauriciojr</a></small>
+            </p>
+        </section>
+
+        <section data-background="images/party-time.gif">
+        </section>
+
+        <section>
+            <h1>It's still in beta</h1>
+            <pre>
+                <code data-trim class="shell">
+                    gem install rails --pre
+                </code>
+            </pre>
+        </section>
+
+        <section data-background="images/boo.gif">
+        </section>
+
+        <section>
+            <h1>Requires Ruby 2.2.2</h1>
+            <p>Yes, you will have to upgrade, so upgrade right into 2.3</p>
+        </section>
+
+        <section>
+            <h1>Using <em>rspec</em>?</h1>
+            <p>You have to run on master, there is no released version for Rails 5</p>
+        </section>
+
+        <section>
+            <h1>Out with <em>rake</em>, in with <em>rails</em></h1>
+            <p>Now commands like <code>rake db:migrate</code> can be called with <code>rails db:migrate</code></p>
+        </section>
+
+        <section>
+            <h1><em>ActiveRecord</em> now has an <em>or</em> method</h1>
+            <pre>
+                <code data-trim class="ruby">
+range = (1.hour.ago..Time.now)
+Post.where(created_at: range).or(Post.where(featured: true))
+                </code>
+            </pre>
+        </section>
+
+        <section>
+            <h1><em>ApplicationRecord</em> now instead of <em>ActiveRecord::Base</em></h1>
+            <pre>
+                <code data-trim class="ruby">
+class ApplicationRecord < ActiveRecord::Base
+    self.abstract_class = true
+end
+
+class Post < ApplicationRecord
+    validates_presence_of :title, :contents
+end
+                </code>
+            </pre>
+        </section>
+
+        <section>
+            <h1>New attributes API for custom attributes</h1>
+            <p>
+                Simplifies handling custom input from forms and operations inside the app.
+            </p>
+        </section>
+
+        <section>
+            <h1>First, <em>cast_value</em></h1>
+            <pre>
+                <code data-trim class="ruby">
+class TagsType < ActiveModel::Type::Value
+
+  def cast_value(value)
+    case value
+      when String
+        value.split(',').map(&:strip)
+      when Array
+        value
+      else
+        nil
+    end
+  end
+
+end
+                </code>
+            </pre>
+        </section>
+
+        <section>
+            <h1>
+                Then <em>serialize</em>
+            </h1>
+            <pre>
+                <code data-trim class="ruby">
+class TagsType < ActiveModel::Type::Value
+
+  def serialize(value)
+    case value
+      when Array
+        value.join(',')
+      else
+        nil
+    end
+  end
+
+end
+                </code>
+            </pre>
+        </section>
+
+        <section>
+            <h1>
+                <em>config/initializers/types.rb</em>
+            </h1>
+            <pre>
+                <code data-trim class="ruby">
+                    ActiveRecord::Type.register(:tag_list, TagsType)
+                </code>
+            </pre>
+        </section>
+
+        <section>
+            <h1>
+                And use it!
+            </h1>
+            <pre>
+                <code data-trim class="ruby">
+class Post < ApplicationRecord
+  attribute :tags, :tag_list
+end
+                </code>
+            </pre>
+        </section>
+
+        <section>
+            <h1>
+                Here's how it looks like
+            </h1>
+            <pre>
+                <code data-trim class="ruby">
+post = Post.create!(
+  title: 'sample post',
+  contents: 'this is not a joke',
+  tags: 'this, is, some, tag')
+
+expect(post.tags).to eq(['this', 'is', 'some', 'tag'])
+                </code>
+            </pre>
+        </section>
+
+        <section>
+            <h1>
+                <em>rails-api</em> is now part of <em>rails</em>
+            </h1>
+            <pre>
+                <code data-trim class="ruby">
+                    rails new your_project_name --api
+                </code>
+            </pre>
+        </section>
+
+        <section>
+            <h1>
+                Why?
+            </h1>
+            <ul>
+                <li>No template rendering engine</li>
+                <li>No session management</li>
+                <li>Perfect as a backend for a single page app</li>
+            </ul>
+        </section>
+
+        <section>
+            <h1>Turbolinks!</h1>
+        </section>
+
+        <section data-background="images/disgusting.gif">
+        </section>
+
+        <section data-background="images/turbolinks-example.png">
+        </section>
+
+        <section>
+            <h1>
+                Turbolinks 3 is out, 5 is in
+            </h1>
+            <p>
+                Support for mobile browsers, permanent chunks of content and more. You'll need both Rails master and
+                Turbolinks v5 branch to give this a try. Very few docs or directions so far.
+            </p>
+        </section>
+
+        <section>
+            <h1>ActionCable</h1>
+            <p>Biggest new addition, websockets as part of Rails!</p>
+        </section>
+
+        <section data-background="images/what-websockets.gif">
+        </section>
+
+        <section>
+            <h1>Websockets!</h1>
+            <p>
+                Stateful and persistent connections to a web server.
+            </p>
+        </section>
+
+        <section data-background="images/why-websockets.gif">
+        </section>
+
+        <section>
+            <h1>
+                Realtime communication
+            </h1>
+            <ul>
+                <li>Chat applications</li>
+                <li>Movement and location based apps</li>
+                <li>Status notifications for background operations</li>
+            </ul>
+        </section>
+
+        <section>
+            <h1>
+                Just every HTTP response
+            </h1>
+            <pre>
+                <code data-trim class="plain">
+< HTTP/1.1 200 OK
+< Date: Mon, 15 Feb 2016 02:31:17 GMT
+< Expires: -1
+< Cache-Control: private, max-age=0
+< Content-Type: text/html; charset=ISO-8859-1
+< P3P: CP="This is not a P3P policy! See https://www.google.com/support/accounts/answer/151657?hl=en for more info."
+< Server: gws
+< X-XSS-Protection: 1; mode=block
+< X-Frame-Options: SAMEORIGIN
+< Set-Cookie: NID=76=jA4wUTDrPnFpUZaLyn5uaHdZcsg0fOCiSR2QA89cKM_a-kETlZ-fov32w-N6mkIQhme5v2FCZ-0ht54HmVIYUmie10HsKWmANBl41cj6NScFwMuv3Nc3lWI9pnZOsqXO-ELTNLxWBPQfnQ; expires=Tue, 16-Aug-2016 02:31:17 GMT; path=/; domain=.google.com; HttpOnly
+< Accept-Ranges: none
+< Vary: Accept-Encoding
+< Transfer-Encoding: chunked
+                </code>
+            </pre>
+        </section>
+
+        <section>
+            <h1>
+                No overhead?
+            </h1>
+            <p>
+                HTTP headers are now gone. But there is no protocol, client and server must figure out a way to
+            communicate correctly and understand each other. <em>ActionCable</em> defines and abstracts this away from your.
+            </p>
+        </section>
+
+        <section>
+            <h1>
+                When you create your app
+            </h1>
+            <ul>
+                <li><em>app/channels/application_channel/connection.rb</em> - where auth lives</li>
+                <li><em>app/channels/application_channel/channel.rb</em> - superclass for all channels</li>
+            </ul>
+        </section>
+
+        <section>
+            <h1>
+                Channels
+            </h1>
+            <p>The link between client and server, clients and servers can send messages to a channel at any moment.</p>
+        </section>
+
+        <section data-background="images/jesus.jpg">
+            <h1>
+                Demo time!
+            </h1>
+        </section>
+
+        <section>
+            <h1>Let's start with the model</h1>
+        </section>
+
+        <section>
+            <pre>
+                <code data-trim class="ruby">
+class Post < ApplicationRecord
+
+  after_save :send_create_notification
+  after_destroy :send_destroy_notification
+
+  def send_create_notification
+    ActionCable.server.broadcast "posts",
+      post: self, action: "created"
+  end
+
+  def send_destroy_notification
+    ActionCable.server.broadcast "posts",
+      post: self, action: "destroyed"
+  end
+
+end
+                </code>
+            </pre>
+        </section>
+
+        <section>
+            <h1>
+                Now the channel
+            </h1>
+            <pre>
+                <code data-trim class="ruby">
+class PostsChannel < ApplicationCable::Channel
+
+  def follow
+    stream_from "posts"
+  end
+
+  def unfollow
+    stop_all_streams
+  end
+
+end
+                </code>
+            </pre>
+        </section>
+
+        <section>
+            <h1>
+                And the client side code
+            </h1>
+        </section>
+
+        <section>
+            <pre>
+                <code data-trim class="coffeescript">
+App.posts = App.cable.subscriptions.create 'PostsChannel',
+
+  connected: ->
+    @perform 'follow'
+
+  received: (data) ->
+    switch data.action
+      when "created" then @postCreated(data.post)
+      when "destroyed" then @postDestroyed(data.post)
+      else console.log("no idea what to do with #{data.action}")
+</code>
+            </pre>
+        </section>
+
+
+        <section>
+            <pre>
+                <code data-trim class="coffeescript">
+App.posts = App.cable.subscriptions.create 'PostsChannel',
+
+  postCreated: (post) ->
+    content = """
+      <div id="post_#{post.id}" class="posts">
+        <h1>#{post.title}</h1>
+        <p>#{post.contents}</p>
+      </div>
+      """
+    jQuery("#posts").append(content);
+
+  postDestroyed: (post) ->
+    jQuery("#post_#{post.id}").remove()
+                </code>
+            </pre>
+        </section>
+
+        <section data-background="images/fantasia.gif">
+            <h1>
+                Magic!
+            </h1>
+        </section>
+
+        <section >
+            <h1>
+                Almost
+            </h1>
+            <p>
+                Based on <em>EventMachine</em> and <em>Redis</em>. You don't want to debug <em>EventMachine</em> code.
+                <strong>Trust me</strong>.
+            </p>
+        </section>
+
+        <section>
+            <h1>
+                Still, first class support is awesome
+            </h1>
+            <p>
+                If you need realtime communication and websockets fit your bill, <em>ActionCable</em> looks like a
+                nice contender if you're already running on <em>Rails</em>.
+            </p>
+        </section>
+
+        <section>
+            <h1>
+                New! Shiny!
+            </h1>
+            <p>
+                It's still the very first version, it will change, we'll have to learn how well it scales and there will
+                be a lot to learn on how to really make use of it.
+            </p>
+        </section>
+
+        <section>
+            <h1>
+                Questions?
+            </h1>
+        </section>
+
+        <section data-background="images/the-end.gif">
+        </section>
+
+<!--
+
+        <section>
+            <h1>
+            </h1>
+            <pre>
+                <code data-trim class="ruby">
+                </code>
+            </pre>
+        </section>
+
+        <section>
+            <h1>
+            </h1>
+            <p>
+            </p>
+        </section>
+
+
+        -->
+
+    </div>
+
+</div>
+
+<script src="lib/js/head.min.js"></script>
+<script src="js/reveal.js"></script>
+
+<script>
+
+    // Full list of configuration options available at:
+    // https://github.com/hakimel/reveal.js#configuration
+    Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+
+        transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+        // Optional reveal.js plugins
+        dependencies: [
+            {
+                src: 'lib/js/classList.js', condition: function () {
+                return !document.body.classList;
+            }
+            },
+            {
+                src: 'plugin/markdown/marked.js', condition: function () {
+                return !!document.querySelector('[data-markdown]');
+            }
+            },
+            {
+                src: 'plugin/markdown/markdown.js', condition: function () {
+                return !!document.querySelector('[data-markdown]');
+            }
+            },
+            {
+                src: 'plugin/highlight/highlight.js', async: true, callback: function () {
+                hljs.initHighlightingOnLoad();
+            }
+            },
+            {src: 'plugin/zoom-js/zoom.js', async: true},
+            {src: 'plugin/notes/notes.js', async: true}
+        ]
+    });
+
+</script>
+
+</body>
+</html>

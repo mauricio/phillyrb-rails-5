@@ -1,0 +1,25 @@
+<%= form_for @post do |f| %>
+
+    <% if @post.errors.any? %>
+        <h2><%= pluralize(@post.errors.count, "error") %> prohibited this post from being saved:</h2>
+
+        <ul>
+          <% @post.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+          <% end %>
+        </ul>
+
+    <% end %>
+
+    <p>
+      Title: <%= f.text_field :title %>
+    </p>
+    <p>
+      Contents:
+      <br/>
+      <%= f.text_area :contents %>
+    </p>
+    <p>
+      <%= f.submit 'Send' %>
+    </p>
+<% end %>

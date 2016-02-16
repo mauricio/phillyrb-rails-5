@@ -1,0 +1,1 @@
+ActiveRecord::Type.register(:tag_list, TagsType)
